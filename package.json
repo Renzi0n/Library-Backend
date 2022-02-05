@@ -1,0 +1,19 @@
+{
+  "name": "ndse10-express-",
+  "version": "1.0.0",
+  "description": "For ndse homeworks on Express framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Renzi0n/NDSE10-Express-.git"
+  },
+  "author": "Andrey Reshetov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Renzi0n/NDSE10-Express-/issues"
+  },
+  "homepage": "https://github.com/Renzi0n/NDSE10-Express-#readme"
+}
