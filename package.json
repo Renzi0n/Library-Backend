@@ -4,7 +4,21 @@
   "description": "For ndse homeworks on Express framework",
   "main": "index.js",
   "scripts": {
-    "test": "dev"
+    "start": "nodemon start src/index.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.7.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1"
+  },
+  "dependencies": {
+    "express": "^4.17.2",
+    "cors": "^2.8.5",
+    "node-unique-id-generator": "^0.1.0"
   },
   "repository": {
     "type": "git",
