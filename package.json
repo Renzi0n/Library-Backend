@@ -4,7 +4,8 @@
   "description": "For ndse homeworks on Express framework",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon start src/index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "devDependencies": {
     "eslint": "^8.7.0",
