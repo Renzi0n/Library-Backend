@@ -1,7 +1,7 @@
 const express = require('express');
 const formData = require('express-form-data');
 const { Book } = require('./models');
-const { booksMock } = require('./mocks');
+const { booksMock, loginMock } = require('./mocks');
 
 const app = express();
 app.use(formData.parse());
@@ -13,6 +13,11 @@ const store = {
 booksMock.forEach((bookItem) => {
   const BookModel = new Book(bookItem);
   store.books.push(BookModel);
+});
+
+app.post('/api/user/login', (_, res) => {
+  res.status(201);
+  res.json(loginMock);
 });
 
 app.get('/api/books', (_, res) => {
