@@ -15,5 +15,7 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'no-plusplus': 'off',
+    'import/prefer-default-export': 'off',
+    'no-unused-vars': 'warn',
   },
 };
