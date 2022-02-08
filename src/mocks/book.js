@@ -9,6 +9,7 @@ const booksMock = [
     favorite: 'unknown',
     fileCover: 'dir',
     fileName: 'First',
+    fileBook: 'book.jpg',
   },
   {
     id: generateUniqueId(),
@@ -18,6 +19,7 @@ const booksMock = [
     favorite: 'unknown',
     fileCover: 'dir',
     fileName: 'Second',
+    fileBook: 'book.jpg',
   },
   {
     id: generateUniqueId(),
@@ -27,6 +29,7 @@ const booksMock = [
     favorite: 'unknown',
     fileCover: 'dir',
     fileName: 'Third',
+    fileBook: 'book.jpg',
   },
 ];
 
