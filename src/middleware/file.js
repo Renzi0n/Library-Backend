@@ -1,24 +1,38 @@
 const multer = require('multer');
+const { COVERS_TYPES, BOOKS_TYPES, FIELDNAMES } = require('../constants/files');
 
 const storage = multer.diskStorage({
-  destination(_req, _file, cb) {
-    cb(null, 'public/img');
+  destination(req, file, cb) {
+    if (file.fieldname === FIELDNAMES.cover) {
+      cb(null, 'public/covers');
+    } else if (file.fieldname === FIELDNAMES.book) {
+      cb(null, 'public/books');
+    }
   },
-  filename(_req, file, cb) {
-    cb(null, `${new Date().toISOString().replace(/:/g, '-')}-${file.originalname}`);
+  filename(req, file, cb) {
+    const extArray = file.mimetype.split('/');
+    const ext = extArray[extArray.length - 1];
+    cb(null, `${req.params.id}.${ext}`);
   },
 });
 
-const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
-
-const fileFilter = (_req, file, cb) => {
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(null, false);
+const fileFilter = (req, file, cb) => {
+  if (file.fieldname === FIELDNAMES.cover) {
+    if (COVERS_TYPES.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  } else if (file.fieldname === FIELDNAMES.book) {
+    if (BOOKS_TYPES.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
   }
 };
 
 module.exports = multer({
-  storage, fileFilter,
+  storage,
+  fileFilter,
 });

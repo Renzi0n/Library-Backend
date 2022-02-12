@@ -1,5 +1,4 @@
 const express = require('express');
-const formData = require('express-form-data');
 const cors = require('cors');
 
 const errorMiddleware = require('./middleware/error');
@@ -10,9 +9,10 @@ const bookRouter = require('./routes/book');
 
 const app = express();
 
-app.use(formData.parse());
 app.use(express.json());
 app.use(cors());
+
+app.use('/public', express.static(`${__dirname}/public`));
 
 app.use('/', indexRouter);
 app.use('/api/login', loginRouter);

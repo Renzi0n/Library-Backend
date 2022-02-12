@@ -1,35 +1,27 @@
-const { generateUniqueId } = require('node-unique-id-generator');
-
 const booksMock = [
   {
-    id: generateUniqueId(),
+    id: '322423mrlk32mflm34',
     title: 'First',
     description: 'First book',
     authors: 'No Name',
     favorite: 'unknown',
-    fileCover: 'dir',
     fileName: 'First',
-    fileBook: 'book.jpg',
   },
   {
-    id: generateUniqueId(),
+    id: 'efwk3049tj039g34jg30',
     title: 'Second',
     description: 'Second book',
     authors: 'No Name 2',
     favorite: 'unknown',
-    fileCover: 'dir',
     fileName: 'Second',
-    fileBook: 'book.jpg',
   },
   {
-    id: generateUniqueId(),
+    id: 'fewf43g31opgn24301gj4930',
     title: 'Third',
     description: 'Third book',
     authors: 'No Name 3',
     favorite: 'unknown',
-    fileCover: 'dir',
     fileName: 'Third',
-    fileBook: 'book.jpg',
   },
 ];
 

@@ -8,4 +8,4 @@ router.post('/login', (_, res) => {
   res.json(loginMock);
 });
 
-module.export = router;
+module.exports = router;
