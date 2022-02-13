@@ -1,85 +1,24 @@
 const express = require('express');
-const formData = require('express-form-data');
-const { Book } = require('./models');
-const { booksMock, loginMock } = require('./mocks');
+const cors = require('cors');
+
+const errorMiddleware = require('./middleware/error');
+
+const indexRouter = require('./routes/index');
+const loginRouter = require('./routes/login');
+const bookRouter = require('./routes/book');
 
 const app = express();
-app.use(formData.parse());
+
 app.use(express.json());
+app.use(cors());
 
-const store = {
-  books: [],
-};
-booksMock.forEach((bookItem) => {
-  const BookModel = new Book(bookItem);
-  store.books.push(BookModel);
-});
+app.use('/public', express.static(`${__dirname}/public`));
 
-app.post('/api/user/login', (_, res) => {
-  res.status(201);
-  res.json(loginMock);
-});
+app.use('/', indexRouter);
+app.use('/api/login', loginRouter);
+app.use('/api/books', bookRouter);
 
-app.get('/api/books', (_, res) => {
-  const { books } = store;
-  res.json(books);
-});
-
-app.get('/api/books/:id', (req, res) => {
-  const { books } = store;
-  const { id } = req.params;
-  const index = books.findIndex((book) => book.id === id);
-
-  if (index !== -1) {
-    res.json(books[index]);
-  } else {
-    res.status(404);
-    res.json(`Book with id ${id} not found`);
-  }
-});
-
-app.post('/api/books', (req, res) => {
-  const { books } = store;
-  const bookData = req.body;
-
-  const NewBook = new Book(bookData);
-  books.push(NewBook);
-
-  res.status(201);
-  res.json(NewBook);
-});
-
-app.put('/api/books/:id', (req, res) => {
-  const { books } = store;
-  const { id } = req.params;
-  const bookData = req.body;
-  const index = books.findIndex((book) => book.id === id);
-
-  if (index !== -1) {
-    books[index] = {
-      ...books[index],
-      ...bookData,
-    };
-    res.json(books[index]);
-  } else {
-    res.status(404);
-    res.json(`Book with id ${id} not found`);
-  }
-});
-
-app.delete('/api/books/:id', (req, res) => {
-  const { books } = store;
-  const { id } = req.params;
-  const index = books.findIndex((book) => book.id === id);
-
-  if (index !== -1) {
-    books.splice(index, 1);
-    res.json('ok');
-  } else {
-    res.status(404);
-    res.json(`Book with id ${id} not found`);
-  }
-});
+app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
