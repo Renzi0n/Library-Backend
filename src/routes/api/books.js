@@ -2,31 +2,23 @@ const path = require('path');
 const express = require('express');
 
 const router = express.Router();
-const fileMiddleware = require('../middleware/file');
-const { Book } = require('../models');
-const { booksMock } = require('../mocks');
-const { FIELDNAMES } = require('../constants/files');
+const fileMiddleware = require('../../middleware/file');
+const BooksList = require('../../models/books-list');
+const { booksMock } = require('../../mocks');
+const { FIELDNAMES } = require('../../constants/files');
 
-const store = {
-  books: [],
-};
-booksMock.forEach((bookItem) => {
-  const BookModel = new Book(bookItem);
-  store.books.push(BookModel);
-});
+booksMock.forEach((bookItem) => BooksList.addBook(bookItem));
 
 router.get('/', (_, res) => {
-  const { books } = store;
-  res.json(books);
+  res.json(BooksList.booksList);
 });
 
 router.get('/:id', (req, res) => {
-  const { books } = store;
   const { id } = req.params;
-  const index = books.findIndex((book) => book.id === id);
+  const bookItem = BooksList.getBookByID(id);
 
-  if (index !== -1) {
-    res.json(books[index]);
+  if (bookItem) {
+    res.json(bookItem);
   } else {
     res.status(404);
     res.json({ error: `Book with id "${id}" not found` });
@@ -34,41 +26,29 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { books } = store;
-  const bookData = req.body;
-
-  const NewBook = new Book(bookData);
-  books.push(NewBook);
+  const newBook = BooksList.addBook(req.body);
 
   res.status(201);
-  res.json(NewBook);
+  res.json(newBook);
 });
 
 router.put('/:id', (req, res) => {
-  const { books } = store;
   const { id } = req.params;
-  const bookData = req.body;
-  const index = books.findIndex((book) => book.id === id);
+  const editedBook = BooksList.editBook(id, req.body);
 
-  if (index !== -1) {
-    books[index] = {
-      ...books[index],
-      ...bookData,
-    };
-    res.json(books[index]);
+  if (editedBook) {
+    res.json(editedBook);
   } else {
     res.status(404);
-    res.json({ error: `Book with id '${id}" not found` });
+    res.json({ error: `Book with id "${id}" not found` });
   }
 });
 
 router.delete('/:id', (req, res) => {
-  const { books } = store;
   const { id } = req.params;
-  const index = books.findIndex((book) => book.id === id);
+  const isDelete = BooksList.removeBook(id);
 
-  if (index !== -1) {
-    books.splice(index, 1);
+  if (isDelete) {
     res.json('ok');
   } else {
     res.status(404);
@@ -78,22 +58,21 @@ router.delete('/:id', (req, res) => {
 
 // files
 const uploadFile = (req, res, next, fieldName) => {
-  const { books } = store;
   const { id } = req.params;
-  const index = books.findIndex((book) => book.id === id);
+  const bookItem = BooksList.getBookByID(id);
 
-  if (index !== -1 && (!books[index].book || !books[index].cover)) {
+  if (bookItem && (!bookItem.book || !bookItem.cover)) {
     res.status(200);
     fileMiddleware.single(fieldName)(req, res, next);
     return;
   }
 
   res.status(404);
-  if (index === -1) {
+  if (bookItem) {
     res.json({ error: `Book with id "${id}" not found` });
-  } else if (fieldName === FIELDNAMES.book && books[index].book) {
+  } else if (fieldName === FIELDNAMES.book && bookItem.book) {
     res.json({ error: `Book file exists for book with id "${id}"` });
-  } else if (fieldName === FIELDNAMES.cover && books[index].cover) {
+  } else if (fieldName === FIELDNAMES.cover && bookItem.cover) {
     res.json({ error: `Cover fileexists for book with id "${id}"` });
   } else {
     res.json({ error: 'Unknown error' });
@@ -101,16 +80,11 @@ const uploadFile = (req, res, next, fieldName) => {
 };
 const uploadResponse = (req, res, fieldName) => {
   if (req.file) {
-    const { books } = store;
     const { id } = req.params;
-    const index = books.findIndex((book) => book.id === id);
-    books[index] = {
-      ...books[index],
-      ...{
-        [fieldName]: req.file.path,
-      },
-    };
-    res.json(books[index]);
+    const editedBook = BooksList.editBook(id, {
+      [fieldName]: req.file.path,
+    });
+    res.json(editedBook);
   } else {
     res.json({ error: 'File upload error' });
   }
@@ -120,14 +94,13 @@ router.post('/:id/upload-cover', (req, res, next) => uploadFile(req, res, next, 
 router.post('/:id/upload-book', (req, res, next) => uploadFile(req, res, next, FIELDNAMES.book), (req, res) => uploadResponse(req, res, FIELDNAMES.book));
 
 router.get('/:id/download-book', (req, res) => {
-  const { books } = store;
   const { id } = req.params;
-  const index = books.findIndex((book) => book.id === id);
+  const bookItem = BooksList.getBookByID(id);
 
-  if (books[index].book) {
-    const filePath = path.join(__dirname, '/../../', books[index].book);
+  if (bookItem.book) {
+    const filePath = path.join(__dirname, '/../../', bookItem.book);
     console.log(path);
-    res.download(filePath, `${books[index].title}${path.extname(filePath)}`, (err) => {
+    res.download(filePath, `${bookItem.title}${path.extname(filePath)}`, (err) => {
       if (err) {
         res.status(404).json({ error: err });
       }
@@ -137,14 +110,13 @@ router.get('/:id/download-book', (req, res) => {
   }
 });
 router.get('/:id/download-cover', (req, res) => {
-  const { books } = store;
   const { id } = req.params;
-  const index = books.findIndex((book) => book.id === id);
+  const bookItem = BooksList.getBookByID(id);
 
-  if (books[index].cover) {
-    const filePath = path.join(__dirname, '/../../', books[index].cover);
+  if (bookItem.cover) {
+    const filePath = path.join(__dirname, '/../../', bookItem.cover);
     console.log(path);
-    res.download(filePath, `${books[index].title}${path.extname(filePath)}`, (err) => {
+    res.download(filePath, `${bookItem.title}${path.extname(filePath)}`, (err) => {
       if (err) {
         res.status(404).json({ error: err });
       }

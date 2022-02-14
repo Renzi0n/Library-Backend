@@ -1,0 +1,11 @@
+<%- include("./layouts/start", {title: title}) %>
+<%- include("./layouts/menu", {title: title}) %>
+
+<div class="jumbotron jumbotron-fluid h-100">
+    <div class="container">
+        <p class="lead">Библиотека с вашими любимыми книгами!</p>
+        <%- include("./books/index") %>
+    </div>
+</div>
+
+<%- include("./layouts/end") %>

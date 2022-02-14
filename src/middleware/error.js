@@ -1,5 +1,5 @@
-module.exports = (_, res) => {
-  res.status(404);
-  const content = '404 | not found';
-  res.send(content);
+module.exports = (req, res) => {
+  res.render('errors/404', {
+    title: '404 | Cтраница не найдена',
+  });
 };
