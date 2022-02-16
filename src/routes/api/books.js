@@ -70,10 +70,6 @@ const uploadFile = (req, res, next, fieldName) => {
   res.status(404);
   if (bookItem) {
     res.json({ error: `Book with id "${id}" not found` });
-  } else if (fieldName === FIELDNAMES.book && bookItem.book) {
-    res.json({ error: `Book file exists for book with id "${id}"` });
-  } else if (fieldName === FIELDNAMES.cover && bookItem.cover) {
-    res.json({ error: `Cover fileexists for book with id "${id}"` });
   } else {
     res.json({ error: 'Unknown error' });
   }

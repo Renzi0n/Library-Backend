@@ -7,7 +7,7 @@ For homeworks on Express framework
   title: "string",
   description: "string",
   authors: "string",
-  favorite: "string",
+  favorite: boolean,
   fileName: "string",
   cover: "string",
   book: "string"

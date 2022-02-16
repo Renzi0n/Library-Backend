@@ -1,1 +1,67 @@
-<a class="btn btn-sm btn-primary" href="books/create">Добавить книгу</a>
+<%- include("../layouts/start", {title: title}) %>
+<%- include("../layouts/menu", {title: title, noBtn: false}) %>
+
+<div class="jumbotron jumbotron-fluid min-vh-100">
+    <div class="container">
+        <p class="lead">Библиотека с вашими любимыми книгами!</p>
+
+        <div class="container py-5">
+            <% if (books.length) { %>
+                <div class="row hidden-md-up">
+                    <% books.map((item, idx) => { %>
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div style="height: 350px" class="d-flex justify-content-center align-items-center">
+                                    <% if (item.cover) { %><img class="card-img-top" src="<%= item.cover %>" alt="Book cover" height="350"> <% } else { %> <p class="text-muted">Загрузите обложку книги</p> <% } %>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title m-0"><%= item.title %></h5>
+                                        <form action="/favorite/<%= item.id %>" method="POST">
+                                            <button style="padding: 0; border: none; background: none; outline: none;">
+                                                <svg style="cursor: pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" stroke="currentColor" fill=<%= item.favorite ? "currentColor" : "white" %> class="bi bi-star-fill" viewBox="0 0 16 16">
+                                                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <p class="card-text py-2"><%= item.description %></p>
+                                </div>
+
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><span class="card-subtitle mb-2 text-muted">Автор: </span><%= item.authors %></li>
+                                    <% if(item.book) { %>
+                                        <li class="list-group-item"><a target="_blank" rel="noopener noreferrer" href="<%= item.book %>" class="card-link">Открыть .pdf файл книги</a></li>
+                                    <% } %>
+                                </ul>
+
+                                <div class="card-body d-flex justify-content-end align-items-center">
+                                    <a class="btn btn-sm btn-success" href="/<%= item.id %>">
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-primary ml-3" href="/update/<%= item.id %>">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    </a>
+                                    <form action="/delete/<%= item.id %>" method="POST" class="d-inline">
+                                        <button class="btn btn-sm btn-danger ml-3">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <p class="alert">Нет книг! Загрузите новые!</p>
+                    <a class="btn btn-sm btn-dark" href="/create"> 
+                        Добавить книгу
+                    </a>
+                </div>
+            <% } %>    
+        </div>
+    </div>
+</div>
+
+<%- include("../layouts/end") %>
