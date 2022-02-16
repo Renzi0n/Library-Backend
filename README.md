@@ -10,7 +10,6 @@ https://books-library-express.herokuapp.com/
   description: "string",
   authors: "string",
   favorite: boolean,
-  fileName: "string",
   cover: "string",
   book: "string"
 }
