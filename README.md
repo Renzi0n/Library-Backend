@@ -1,5 +1,7 @@
 # NDSE10-Express-
 For homeworks on Express framework
+
+https://books-library-express.herokuapp.com/
 #### Структура данных
 ```javascript
 {
@@ -7,7 +9,7 @@ For homeworks on Express framework
   title: "string",
   description: "string",
   authors: "string",
-  favorite: "string",
+  favorite: boolean,
   fileName: "string",
   cover: "string",
   book: "string"

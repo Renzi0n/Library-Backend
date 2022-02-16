@@ -1,0 +1,10 @@
+<%- include("../layouts/start", {title: title}) %>
+<%- include("../layouts/menu", {title: title, noBtn: false}) %>
+
+<div class="row justify-content-center">
+    <div class="col-sm-6">
+        <%- include("form", {book: book}) %>
+    </div>
+</div>
+
+<%- include("../layouts/end") %>

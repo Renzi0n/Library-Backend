@@ -1,0 +1,47 @@
+<form method="POST" class="mt-5" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="inputTitle">Название</label>
+        <input type="text"
+               value="<%= book.title %>"
+               name="title"
+               class="form-control"
+               id="inputTitle">
+    </div>
+
+    <div class="form-group">
+        <label for="inputDesc">Описание</label>
+        <textarea
+                rows="3"
+                name="description"
+                class="form-control"
+                id="inputDesc"
+        ><%= book.description %></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="inputAuthors">Автор</label>
+        <input type="text"
+               value="<%= book.authors %>"
+               name="authors"
+               class="form-control"
+               id="inputAuthors">
+    </div>
+
+    <div class="form-group">
+        <label for="cover"><% if (book.cover) { %> Обновить обложку <% } else { %> Создать обложку <% } %> (.jpg, .png)</label>
+        <div class="custom-file">
+            <input type="file" name="cover" id="cover" accept="image/png, image/jpg, image/jpeg">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="book"><% if (book.book) { %> Обновить файл книги <% } else { %> Создать файл книги <% } %> (.pdf, .epub, .html)</label>
+        <div class="custom-file">
+            <input type="file" name="book" id="book" accept="text/html, application/epub+zip, application/pdf, text/plain">
+        </div>
+    </div>
+
+    <div class="form-group text-center ">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>
