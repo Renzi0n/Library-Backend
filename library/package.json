@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon -r dotenv/config src/index.js"
+    "dev": "nodemon -r dotenv/config src/index.js --ignore ../counter/ --ignore ../counter/src/counter.json"
   },
   "devDependencies": {
     "eslint": "^8.7.0",
@@ -17,6 +17,7 @@
     "prettier": "^2.5.1"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "ejs": "^3.1.6",
