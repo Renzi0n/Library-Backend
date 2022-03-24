@@ -1,0 +1,39 @@
+{
+  "name": "ndse10-express-",
+  "version": "1.0.0",
+  "description": "For ndse homeworks on Express framework",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon -r dotenv/config src/index.js --ignore ../library/ --ignore src/counter.json"
+  },
+  "devDependencies": {
+    "eslint": "^8.7.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1"
+  },
+  "dependencies": {
+    "axios": "^0.26.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.2",
+    "express-form-data": "^2.0.17",
+    "multer": "^1.4.4",
+    "node-unique-id-generator": "^0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Renzi0n/NDSE10-Express-.git"
+  },
+  "author": "Andrey Reshetov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Renzi0n/NDSE10-Express-/issues"
+  },
+  "homepage": "https://github.com/Renzi0n/NDSE10-Express-#readme"
+}

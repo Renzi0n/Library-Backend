@@ -1,0 +1,28 @@
+services:
+  library:
+    build: ./library
+    environment:
+      - LIBRARY_PORT=4000
+      - COUNTER_PORT=3000
+      - URL=http://counter
+    ports:
+      - "4000:4000"
+    networks:
+      - apps
+  counter:
+    build: ./counter
+    environment:
+      - LIBRARY_PORT=4000
+      - COUNTER_PORT=3000
+      - URL=http://library
+    ports:
+      - "3000:3000"
+    depends_on:
+      - library
+    networks:
+      - apps
+    volumes:
+      - ./counter/counter-db:/app/counter-db
+networks:
+  apps:
+    driver: bridge

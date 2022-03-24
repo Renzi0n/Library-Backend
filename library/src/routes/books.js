@@ -1,9 +1,13 @@
 const express = require('express');
+const axios = require('axios');
 
 const router = express.Router();
 
 const fileMiddleware = require('../middleware/file');
 const BooksList = require('../models/books-list');
+
+const externalCounterPort = process.env.COUNTER_PORT || 3000;
+const externalURL = process.env.URL || 'http://localhost';
 
 router.get('/create', (req, res) => {
   res.render('books/create', {
@@ -19,15 +23,28 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/view/:id', async (req, res) => {
   const { id } = req.params;
   const bookItem = BooksList.getBookByID(id);
 
   if (bookItem) {
-    res.render('books/view', {
-      title: bookItem.title,
-      book: bookItem,
-    });
+    try {
+      await axios.post(`${externalURL}:${externalCounterPort}/counter/${id}/incr`);
+      const { data } = await axios.get(`${externalURL}:${externalCounterPort}/counter/${id}`);
+
+      res.render('books/view', {
+        title: bookItem.title,
+        book: bookItem,
+        views: data[id],
+      });
+    } catch (err) {
+      console.error(err);
+      res.render('books/view', {
+        title: bookItem.title,
+        book: bookItem,
+        views: 'неизвестно',
+      });
+    }
   } else {
     res.status(404).redirect('/404');
   }
@@ -48,7 +65,7 @@ const favoriteToggler = (req, res, redirectAdress) => {
 };
 
 router.post('/favorite/:id', (req, res) => favoriteToggler(req, res, '/'));
-router.post('/favorite/:id/view', (req, res) => favoriteToggler(req, res, `/${req.params.id}`));
+router.post('/favorite/:id/view', (req, res) => favoriteToggler(req, res, `/view/${req.params.id}`));
 
 router.get('/update/:id', (req, res) => {
   const { id } = req.params;
@@ -74,7 +91,7 @@ router.post('/update/:id', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }
   });
 
   if (editedBook) {
-    res.redirect(`/${id}`);
+    res.redirect(`/view/${id}`);
   } else {
     res.status(404).redirect('/404');
   }
@@ -88,7 +105,7 @@ router.post('/create', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }, { 
   });
 
   if (newBook) {
-    res.redirect(`/${newBook.id}`);
+    res.redirect(`/view/${newBook.id}`);
   } else {
     res.status(404).redirect('/404');
   }
