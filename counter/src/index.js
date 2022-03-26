@@ -46,10 +46,10 @@ const updateCounterFromLibrary = async (counterMap) => {
   const existsIDs = Object.keys(counterMap);
 
   // Массив недобавленных в counter книг
-  const newBooks = booksFromLibrary.filter((it) => !existsIDs.includes(it.id));
+  const newBooks = booksFromLibrary.filter((it) => !existsIDs.includes(it._id));
   const newBooksMap = newBooks.reduce((acc, item) => ({
     ...acc,
-    [`${item.id}`]: 0,
+    [`${item._id}`]: 0,
   }), {});
 
   const clearedCounterMap = clearCounterFromLibrary(counterMap, booksFromLibrary);

@@ -1,9 +1,13 @@
+/* MODULES */
 const path = require('path');
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 
+/* MIDDLEWARES */
 const errorMiddleware = require('./middleware/error');
 
+/* ROUTERS */
 const booksRouter = require('./routes/books');
 const loginApiRouter = require('./routes/api/login');
 const booksApiRouter = require('./routes/api/books');
@@ -24,7 +28,19 @@ app.use('/api/books', booksApiRouter);
 
 app.use(errorMiddleware);
 
-const PORT = process.env.LIBRARY_PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Library server is running on port ${PORT}`);
-});
+/* ENVIROMENT VARIABLES */
+const SERVER_PORT = process.env.LIBRARY_PORT || 4000;
+const MONGO_URL = process.env.MONGO_URL || 'mongo';
+const MONGO_PORT = process.env.MONGO_PORT || 27017;
+const DB_NAME = process.env.DB_NAME || 'BOOKS';
+async function start() {
+  try {
+    await mongoose.connect(`${MONGO_URL}:${MONGO_PORT}/${DB_NAME}`);
+    app.listen(SERVER_PORT, () => {
+      console.log(`Server is running on port ${SERVER_PORT}`);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+start();
