@@ -16,17 +16,16 @@ router.get('/create', (req, res) => {
   });
 });
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   res.render('books/index', {
     title: 'BOOKS LIBRARY',
-    books: BooksList.booksList,
+    books: await BooksList.getBooksList(),
   });
 });
 
 router.get('/view/:id', async (req, res) => {
   const { id } = req.params;
-  const bookItem = BooksList.getBookByID(id);
-
+  const bookItem = await BooksList.getBookByID(id);
   if (bookItem) {
     try {
       await axios.post(`${externalURL}:${externalCounterPort}/counter/${id}/incr`);
@@ -50,10 +49,10 @@ router.get('/view/:id', async (req, res) => {
   }
 });
 
-const favoriteToggler = (req, res, redirectAdress) => {
+const favoriteToggler = async (req, res, redirectAdress) => {
   const { id } = req.params;
-  const bookItem = BooksList.getBookByID(id);
-  const editedBook = BooksList.editBook(id, {
+  const bookItem = await BooksList.getBookByID(id);
+  const editedBook = await BooksList.editBook(id, {
     favorite: !bookItem.favorite,
   });
 
@@ -67,9 +66,9 @@ const favoriteToggler = (req, res, redirectAdress) => {
 router.post('/favorite/:id', (req, res) => favoriteToggler(req, res, '/'));
 router.post('/favorite/:id/view', (req, res) => favoriteToggler(req, res, `/view/${req.params.id}`));
 
-router.get('/update/:id', (req, res) => {
+router.get('/update/:id', async (req, res) => {
   const { id } = req.params;
-  const bookItem = BooksList.getBookByID(id);
+  const bookItem = await BooksList.getBookByID(id);
 
   if (bookItem) {
     res.render('books/update', {
@@ -81,10 +80,10 @@ router.get('/update/:id', (req, res) => {
   }
 });
 
-router.post('/update/:id', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }, { name: 'book', maxCount: 1 }]), (req, res) => {
+router.post('/update/:id', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }, { name: 'book', maxCount: 1 }]), async (req, res) => {
   const { id } = req.params;
-  const bookItem = BooksList.getBookByID(id);
-  const editedBook = BooksList.editBook(id, {
+  const bookItem = await BooksList.getBookByID(id);
+  const editedBook = await BooksList.editBook(id, {
     ...req.body,
     cover: req.files.cover ? req.files.cover[0].path : bookItem.cover,
     book: req.files.book ? req.files.book[0].path : bookItem.book,
@@ -97,8 +96,8 @@ router.post('/update/:id', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }
   }
 });
 
-router.post('/create', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }, { name: 'book', maxCount: 1 }]), (req, res) => {
-  const newBook = BooksList.addBook({
+router.post('/create', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }, { name: 'book', maxCount: 1 }]), async (req, res) => {
+  const newBook = await BooksList.addBook({
     ...req.body,
     cover: req.files.cover ? req.files.cover[0].path : null,
     book: req.files.book ? req.files.book[0].path : null,
@@ -111,9 +110,9 @@ router.post('/create', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }, { 
   }
 });
 
-router.post('/delete/:id', (req, res) => {
+router.post('/delete/:id', async (req, res) => {
   const { id } = req.params;
-  const isDelete = BooksList.removeBook(id);
+  const isDelete = await BooksList.removeBook(id);
 
   if (isDelete) {
     res.redirect('/');

@@ -1,17 +1,19 @@
-const Book = require('./book');
+/* eslint-disable class-methods-use-this */
+/* eslint-disable max-classes-per-file */
+const BookModel = require('./book-model');
 
 class BooksList {
-  constructor() {
-    this.booksList = [];
+  async getBooksList() {
+    return BookModel.find();
   }
 
   /** Получить книгу
    * @id - строка с id книги, которую надо получить */
-  getBookByID(id) {
-    const index = this.booksList.findIndex((book) => book.id === id);
-
-    if (index !== -1) {
-      return this.booksList[index];
+  async getBookByID(id) {
+    try {
+      return await BookModel.findById(id);
+    } catch (e) {
+      console.error(e);
     }
 
     return null;
@@ -19,38 +21,45 @@ class BooksList {
 
   /** Добавить книги
    * @bookData - объект книги, которую надо добавить */
-  addBook(bookData) {
-    const NewBook = new Book(bookData);
-    this.booksList.push(NewBook);
+  async addBook(bookData) {
+    const newBook = new BookModel(bookData);
 
-    return NewBook;
+    try {
+      const res = await newBook.save();
+      this.booksList = await BookModel.find();
+      return res;
+    } catch (e) {
+      console.error(e);
+    }
+
+    return null;
   }
 
   /** Удалить книгу
    * @id - строка с id книги, которую надо удалить */
-  removeBook(id) {
-    const index = this.booksList.findIndex((book) => book.id === id);
-    if (index !== -1) {
-      this.booksList.splice(index, 1);
-      return true;
+  async removeBook(id) {
+    try {
+      const res = await BookModel.deleteOne({ _id: id });
+      this.booksList = await BookModel.find();
+      return res;
+    } catch (e) {
+      console.error(e);
     }
 
-    return false;
+    return null;
   }
 
   /** Редактировать книгу
    * @id - строка с id книги, которую надо изменить
    * @data - Объект с полями книги, которые надо изменить
    * */
-  editBook(id, bookData) {
-    const index = this.booksList.findIndex((book) => book.id === id);
-    if (index !== -1) {
-      this.booksList[index] = {
-        ...this.booksList[index],
-        ...bookData,
-      };
-
-      return this.booksList[index];
+  async editBook(id, bookData) {
+    try {
+      const res = await BookModel.findByIdAndUpdate(id, bookData);
+      this.booksList = await BookModel.find();
+      return res;
+    } catch (e) {
+      console.error(e);
     }
 
     return null;

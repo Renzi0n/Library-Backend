@@ -1,12 +1,38 @@
 services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:     
+      - 27017:27017
+    environment:     
+      - MONGO_INITDB_DATABASE=BOOKS
+    networks:
+      - apps
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:     
+      - 8081:8081
+    environment:
+        ME_CONFIG_MONGODB_ADMINUSERNAME: root
+        ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    depends_on:
+      - mongo
+    networks:
+      - apps
   library:
     build: ./library
     environment:
       - LIBRARY_PORT=4000
       - COUNTER_PORT=3000
       - URL=http://counter
+      - MONGO_URL=mongodb://mongo
+      - MONGO_PORT=27017
+      - DB_NAME=BOOKS
     ports:
       - "4000:4000"
+    depends_on:
+      - mongo
     networks:
       - apps
   counter:

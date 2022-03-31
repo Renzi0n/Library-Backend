@@ -4,18 +4,15 @@ const express = require('express');
 const router = express.Router();
 const fileMiddleware = require('../../middleware/file');
 const BooksList = require('../../models/books-list');
-const { booksMock } = require('../../mocks');
 const { FIELDNAMES } = require('../../constants/files');
 
-booksMock.forEach((bookItem) => BooksList.addBook(bookItem));
-
-router.get('/', (_, res) => {
-  res.json(BooksList.booksList);
+router.get('/', async (_, res) => {
+  res.json(await BooksList.getBooksList());
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const bookItem = BooksList.getBookByID(id);
+  const bookItem = await BooksList.getBookByID(id);
 
   if (bookItem) {
     res.json(bookItem);
@@ -25,16 +22,16 @@ router.get('/:id', (req, res) => {
   }
 });
 
-router.post('/', (req, res) => {
-  const newBook = BooksList.addBook(req.body);
+router.post('/', async (req, res) => {
+  const newBook = await BooksList.addBook(req.body);
 
   res.status(201);
   res.json(newBook);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const editedBook = BooksList.editBook(id, req.body);
+  const editedBook = await BooksList.editBook(id, req.body);
 
   if (editedBook) {
     res.json(editedBook);
@@ -44,9 +41,9 @@ router.put('/:id', (req, res) => {
   }
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const { id } = req.params;
-  const isDelete = BooksList.removeBook(id);
+  const isDelete = await BooksList.removeBook(id);
 
   if (isDelete) {
     res.json('ok');
@@ -57,9 +54,9 @@ router.delete('/:id', (req, res) => {
 });
 
 // files
-const uploadFile = (req, res, next, fieldName) => {
+const uploadFile = async (req, res, next, fieldName) => {
   const { id } = req.params;
-  const bookItem = BooksList.getBookByID(id);
+  const bookItem = await BooksList.getBookByID(id);
 
   if (bookItem && (!bookItem.book || !bookItem.cover)) {
     res.status(200);
@@ -74,10 +71,10 @@ const uploadFile = (req, res, next, fieldName) => {
     res.json({ error: 'Unknown error' });
   }
 };
-const uploadResponse = (req, res, fieldName) => {
+const uploadResponse = async (req, res, fieldName) => {
   if (req.file) {
     const { id } = req.params;
-    const editedBook = BooksList.editBook(id, {
+    const editedBook = await BooksList.editBook(id, {
       [fieldName]: req.file.path,
     });
     res.json(editedBook);
@@ -89,9 +86,9 @@ const uploadResponse = (req, res, fieldName) => {
 router.post('/:id/upload-cover', (req, res, next) => uploadFile(req, res, next, FIELDNAMES.cover), (req, res) => uploadResponse(req, res, FIELDNAMES.cover));
 router.post('/:id/upload-book', (req, res, next) => uploadFile(req, res, next, FIELDNAMES.book), (req, res) => uploadResponse(req, res, FIELDNAMES.book));
 
-router.get('/:id/download-book', (req, res) => {
+router.get('/:id/download-book', async (req, res) => {
   const { id } = req.params;
-  const bookItem = BooksList.getBookByID(id);
+  const bookItem = await BooksList.getBookByID(id);
 
   if (bookItem.book) {
     const filePath = path.join(__dirname, '/../../', bookItem.book);
@@ -105,9 +102,9 @@ router.get('/:id/download-book', (req, res) => {
     res.status(404).json({ error: `Book file isn't exists for book with id "${id}"` });
   }
 });
-router.get('/:id/download-cover', (req, res) => {
+router.get('/:id/download-cover', async (req, res) => {
   const { id } = req.params;
-  const bookItem = BooksList.getBookByID(id);
+  const bookItem = await BooksList.getBookByID(id);
 
   if (bookItem.cover) {
     const filePath = path.join(__dirname, '/../../', bookItem.cover);
