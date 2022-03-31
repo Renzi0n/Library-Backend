@@ -58,9 +58,11 @@ const updateCounterFromLibrary = async (counterMap) => {
   return { ...clearedCounterMap, ...newBooksMap };
 };
 
-updateCounterFromLibrary(JSON.parse(fs.readFileSync(counterJsonPath, 'utf8'))).then((initialUpdatedCounter) => {
-  fs.writeFileSync(counterJsonPath, JSON.stringify(initialUpdatedCounter));
-});
+setTimeout(() => {
+  updateCounterFromLibrary(JSON.parse(fs.readFileSync(counterJsonPath, 'utf8'))).then((initialUpdatedCounter) => {
+    fs.writeFileSync(counterJsonPath, JSON.stringify(initialUpdatedCounter));
+  })  
+}, 15000)
 
 app.post('/counter/:bookId/incr', async (req, res) => {
   const { bookId } = req.params;
