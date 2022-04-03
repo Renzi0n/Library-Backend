@@ -1,0 +1,18 @@
+<%- include("../layouts/start", {title: title}) %>
+<%- include("../layouts/menu", {title: title, noBtn: false, user: user}) %>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-sm-8">
+        <div class="card">
+            <div class="card-body">
+                <img class="card-img-top" src="<% if (user.avatar) {%>../<%= user.avatar %><% } else { %>../public/avatars/unknown.jpg<% } %>" alt="Avatar" height="498">
+                
+                <p class="card-text"><span class="card-subtitle mb-2 text-muted">Логин: </span><%= user.username %></p>
+
+                <% if (isCurrentUser) {%><a href="/profile/edit/<%= user.username %>" class="btn btn-primary">Редактировать профиль</a><% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include("../layouts/end") %>

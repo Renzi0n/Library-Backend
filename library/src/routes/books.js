@@ -4,7 +4,7 @@ const axios = require('axios');
 const router = express.Router();
 
 const fileMiddleware = require('../middleware/file');
-const BooksList = require('../models/books-list');
+const BooksList = require('../models/books-adapter');
 
 const externalCounterPort = process.env.COUNTER_PORT || 3000;
 const externalURL = process.env.URL || 'http://localhost';
@@ -13,6 +13,7 @@ router.get('/create', (req, res) => {
   res.render('books/create', {
     title: 'Добавить книгу',
     book: {},
+    user: req.user,
   });
 });
 
@@ -20,6 +21,7 @@ router.get('/', async (req, res) => {
   res.render('books/index', {
     title: 'BOOKS LIBRARY',
     books: await BooksList.getBooksList(),
+    user: req.user,
   });
 });
 
@@ -35,6 +37,7 @@ router.get('/view/:id', async (req, res) => {
         title: bookItem.title,
         book: bookItem,
         views: data[id],
+        user: req.user,
       });
     } catch (err) {
       console.error(err);
@@ -42,6 +45,7 @@ router.get('/view/:id', async (req, res) => {
         title: bookItem.title,
         book: bookItem,
         views: 'неизвестно',
+        user: req.user,
       });
     }
   } else {
@@ -74,6 +78,7 @@ router.get('/update/:id', async (req, res) => {
     res.render('books/update', {
       title: 'Редактировать книгу',
       book: bookItem,
+      user: req.user,
     });
   } else {
     res.status(404).redirect('/404');
@@ -99,8 +104,8 @@ router.post('/update/:id', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }
 router.post('/create', fileMiddleware.fields([{ name: 'cover', maxCount: 1 }, { name: 'book', maxCount: 1 }]), async (req, res) => {
   const newBook = await BooksList.addBook({
     ...req.body,
-    cover: req.files.cover ? req.files.cover[0].path : null,
-    book: req.files.book ? req.files.book[0].path : null,
+    cover: req.files.cover ? req.files.cover[0].path : '',
+    book: req.files.book ? req.files.book[0].path : '',
   });
 
   if (newBook) {

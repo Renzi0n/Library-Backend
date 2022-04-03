@@ -11,7 +11,7 @@ const bookSchema = new Schema({
   },
   authors: {
     type: String,
-    default: '',
+
   },
   favorite: {
     type: Boolean,

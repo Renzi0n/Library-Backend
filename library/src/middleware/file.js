@@ -2,11 +2,13 @@ const multer = require('multer');
 const { COVERS_TYPES, BOOKS_TYPES, FIELDNAMES } = require('../constants/files');
 
 const storage = multer.diskStorage({
-  destination(req, file, cb) {
+  destination(_, file, cb) {
     if (file.fieldname === FIELDNAMES.cover) {
       cb(null, 'public/covers');
     } else if (file.fieldname === FIELDNAMES.book) {
       cb(null, 'public/books');
+    } else if (file.fieldname === FIELDNAMES.avatar) {
+      cb(null, 'public/avatars');
     }
   },
   filename(req, file, cb) {
@@ -16,8 +18,8 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  if (file.fieldname === FIELDNAMES.cover) {
+const fileFilter = (_, file, cb) => {
+  if (file.fieldname === FIELDNAMES.cover || file.fieldname === FIELDNAMES.avatar) {
     if (COVERS_TYPES.includes(file.mimetype)) {
       cb(null, true);
     } else {

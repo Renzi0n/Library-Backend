@@ -1,0 +1,40 @@
+<%- include("../layouts/start", {title: title}) %>
+<%- include("../layouts/menu", {title: title, noBtn: false, user: {
+    ...user,
+    avatar: user.avatar ? `../${user.avatar}` : ''
+}}) %>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-sm-8">
+        <div class="card">
+            <div class="card-body">
+                <img class="card-img-top" src="<% if (user.avatar) {%>../../<%= user.avatar %><% } else { %>../../public/avatars/unknown.jpg<% } %>" alt="Avatar" height="498">
+                
+                <form method="POST" class="mt-5" enctype="multipart/form-data">
+
+                    <div class="form-group">
+                        <label for="avatar">Новый аватар(не загружайте, если не хотите менять)</label>
+                        <div class="custom-file">
+                            <input type="file" name="avatar" id="avatar" accept="image/png, image/jpg, image/jpeg">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="login">Логин</label>
+                      <input value="<%= user.username %>" required type="text" class="form-control <% if (error) { %> border border-danger <% } %>" id="login" aria-describedby="login" name="username" placeholder="Введите логин">
+                    </div>
+                    <div class="form-group">
+                      <label for="password">Пароль</label>
+                      <input value="<%= user.password %>" required type="password" class="form-control <% if (error) { %> border border-danger <% } %>" id="password" name="password" placeholder="Пароль">
+                    </div>
+                    
+                    <% if (error) { %> <p class="card-text text-danger"><%= error %></p> <% } %>
+
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include("../layouts/end") %>

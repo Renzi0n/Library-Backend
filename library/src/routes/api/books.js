@@ -3,7 +3,7 @@ const express = require('express');
 
 const router = express.Router();
 const fileMiddleware = require('../../middleware/file');
-const BooksList = require('../../models/books-list');
+const BooksList = require('../../models/books-adapter');
 const { FIELDNAMES } = require('../../constants/files');
 
 router.get('/', async (_, res) => {

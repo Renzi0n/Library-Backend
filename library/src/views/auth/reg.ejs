@@ -1,0 +1,33 @@
+<%- include("../layouts/start", {title: title}) %>
+
+<div class="vh-100 d-flex flex-column justify-content-center align-items-center">
+  <h1 class="text-dark mb-3">BOOKS LIBRARY</h1>
+  <div class="card shadow rounded" style="width: 18rem;">
+    <div class="card-body">
+      <h5 class="card-title text-center">РЕГИСТРАЦИЯ</h5>
+      <form method="POST" class="needs-validation" enctype="multipart/form-data">
+
+          <div class="form-group">
+            <label for="login">Логин</label>
+            <input required type="text" class="form-control <% if (error) { %> border border-danger <% } %>" id="login" aria-describedby="login" name="username" placeholder="Введите логин">
+          </div>
+          <div class="form-group">
+            <label for="password">Пароль(не менее 6 символов)</label>
+            <input required type="password" class="form-control <% if (error) { %> border border-danger <% } %>" id="password" name="password" placeholder="Пароль">
+          </div>
+          <div class="form-group">
+              <label for="avatar">Загрузите аватар</label>
+              <div class="custom-file">
+                  <input type="file" name="avatar" id="avatar" accept="image/png, image/jpg, image/jpeg">
+              </div>
+          </div>
+
+          <% if (error) { %> <p class="card-text text-danger"><%= error %></p> <% } %>
+
+          <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include("../layouts/end") %>

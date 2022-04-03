@@ -3,6 +3,7 @@ const BOOKS_TYPES = ['text/html', 'application/epub+zip', 'application/pdf', 'te
 const FIELDNAMES = {
   cover: 'cover',
   book: 'book',
+  avatar: 'avatar',
 };
 
 module.exports = {
