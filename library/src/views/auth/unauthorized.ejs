@@ -1,0 +1,15 @@
+<%- include("../layouts/start", {title: title}) %>
+
+<div class="vh-100 d-flex flex-column justify-content-center align-items-center">
+    <h1 class="text-dark mb-3">BOOKS LIBRARY</h1>
+    <div class="card text-center shadow rounded" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Вы не авторизованы!</h5>
+            <p class="card-text">Выберите удобный способ:</p>
+            <a class="btn btn-primary mb-2" href="/login" role="button">Войти</a>
+            <a class="btn btn-primary" href="/register" role="button">Зарегистрироваться</a>
+        </div>
+    </div>
+</div>
+
+<%- include("../layouts/end") %>

@@ -1,8 +1,18 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/">BOOKS LIBRARY</a>
-    <% if (!noBtn) {%>
-        <a class="btn btn-sm btn-light" href="/create"> 
-            Добавить книгу
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex justify-content-between">
+    <div>
+        <a class="navbar-brand" href="/">BOOKS LIBRARY</a>
+        <% if (!noBtn) {%>
+            <a class="btn btn-sm btn-light" href="/create"> 
+                Добавить книгу
+            </a>
+        <% } %>
+    </div>
+    <div>
+        <a href="/profile/<%= user.username %>">
+            <img src="<% if (user.avatar) {%>../<%= user.avatar %><% } else { %>../public/avatars/unknown.jpg<% } %>" class="rounded-circle" style="width: 45px;" alt="Avatar" />
         </a>
-    <% } %>
+        <a class="btn btn-sm btn-primary ml-2" href="/logout"> 
+            Выйти
+        </a>
+    </div>
 </nav>

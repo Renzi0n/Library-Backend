@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-classes-per-file */
-const BookModel = require('./book-model');
+const BookModel = require('./books-model');
 
 class BooksList {
   async getBooksList() {
