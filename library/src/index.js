@@ -76,7 +76,9 @@ const usersRouter = require('./routes/users');
 app.use('/public', express.static(`${__dirname}/../public`));
 app.use('/', authRouter);
 
-app.get('/', (req, res, next) => {
+app.use('/', (req, res, next) => {
+  if (req.headers.host === 'library:4000') return next();
+
   console.log('FROM REDIRECT: ', req.user, req.username, req.isAuthenticated());
   if (!req.isAuthenticated()) {
     if (req.session) {
