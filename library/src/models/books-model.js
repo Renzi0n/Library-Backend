@@ -1,4 +1,32 @@
 const { Schema, model } = require('mongoose');
+const { generateUniqueId } = require('node-unique-id-generator');
+
+const commentSchema = new Schema({
+  text: {
+    type: String,
+    default: '',
+  },
+  likesCount: {
+    type: Number,
+    default: 0,
+  },
+  author: {
+    type: String,
+    default: '',
+  },
+  authorAvatar: {
+    type: String,
+    default: '',
+  },
+  date: {
+    type: String,
+    default: `${new Date(Date.now() - (new Date().getTimezoneOffset() * 60 * 1000)).toISOString().slice(0, -5).split('T')[0]} ${new Date(Date.now() - (new Date().getTimezoneOffset() * 60 * 1000)).toISOString().slice(0, -5).split('T')[1]}`,
+  },
+  _id: {
+    type: String,
+    default: generateUniqueId(),
+  },
+});
 
 const bookSchema = new Schema({
   title: {
@@ -11,11 +39,11 @@ const bookSchema = new Schema({
   },
   authors: {
     type: String,
-
+    default: '',
   },
-  favorite: {
-    type: Boolean,
-    default: false,
+  favoriteCount: {
+    type: Number,
+    default: 0,
   },
   book: {
     type: String,
@@ -24,6 +52,10 @@ const bookSchema = new Schema({
   cover: {
     type: String,
     default: '',
+  },
+  messages: {
+    type: [commentSchema],
+    default: [],
   },
 });
 
