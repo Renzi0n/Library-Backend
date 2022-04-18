@@ -2,24 +2,25 @@
 <%- include("../layouts/menu", {title: title, noBtn: false, user: user}) %>
 
 <div class="row justify-content-center mt-4">
-    <div class="col-sm-8">
+    <div class="col-sm-9">
         <div class="card">
             <div class="card-body">
-                <div style="height: 500px" class="d-flex justify-content-center align-items-center <% if (!book.cover) { %> border <% } %>">
-                    <% if (book.cover) { %><img class="card-img-top" src="../<%= book.cover %>" alt="Book cover" height="498"> <% } else { %> <p class="text-muted">Загрузите обложку книги</p> <% } %>
+                <div style="height: 400px" class="d-flex justify-content-center align-items-center <% if (!book.cover) { %> border <% } %>">
+                    <% if (book.cover) { %><img class="card-img-top" src="../<%= book.cover %>" alt="Book cover" height="398"> <% } else { %> <p class="text-muted">Загрузите обложку книги</p> <% } %>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-4">
                     <h5 class="card-title m-0"><%= book.title %></h5>
-                    <form action="/favorite/<%= book.id %>/view" method="POST">
-                        <button style="padding: 0; border: none; background: none; outline: none;">
-                            <svg style="cursor: pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" stroke="currentColor" fill=<%= book.favorite ? "currentColor" : "white" %> class="bi bi-star-fill" viewBox="0 0 16 16">
+                    <form action="/favorite/<%= book.id %>/view" method="POST" class="d-flex">
+                        <p class="mb-0 mt-1"><%= book.favoriteCount %></p>
+                        <button class="ml-1" style="padding: 0; border: none; background: none; outline: none;">
+                            <svg style="cursor: pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" stroke="currentColor" fill=<%= user.favoriteBooks.find((id) => book.id === id) ? "currentColor" : "white" %> class="bi bi-star-fill" viewBox="0 0 16 16">
                                 <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
                             </svg>
                         </button>
                     </form>
                 </div>
                 <p class="card-text"><span class="card-subtitle mb-2 text-muted">Автор: </span><%= book.authors %></p>
-                <p class="card-text"><%= book.description %>.</p>
+                <p class="card-text"><%= book.description %></p>
                 <% if(book.book) { %>
                     <a target="_blank" rel="noopener noreferrer" href="../<%= book.book %>" class="card-link">Открыть .pdf файл книги</a>
                 <% } %>
@@ -36,9 +37,108 @@
                     </form>
                 </div>
 
+                <div class="col-md-12 col-lg-12 d-flex justify-content-center p-0">
+                    <div class="col-md-12 col-lg-12 p-0 pt-3 text-right">
+                      <div class="card shadow-0 border" style="background-color: #f0f2f5;">
+                        <div class="card-body p-4">
+                          <div class="form-outline mb-4 d-flex justify-content-between">
+                            <input type="text" id="msg-text" placeholder="Type comment..." style="flex-grow: 1;">
+                            <button class="btn btn-dark text-light ml-3" id="send-btn">+ Add a note</button>
+                          </div>
+                          
+                          <div id="msg-list">
+                            <% if(book.messages.length === 0) { %>
+                              <p id="no-comments" class="text-center">Нет комметариев!</p>
+                            <% } %>
+                            <!-- MESSAGES -->
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
             </div>
         </div>
     </div>
 </div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const getMsgTemplate = (msg) => {
+    return `<div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex flex-row align-items-center justify-content-between mb-2">
+                  <div class="d-flex flex-row align-items-center">
+                    <img src="../${msg.authorAvatar}" alt="avatar" width="25"
+                      height="25" />
+                    <p class="small mb-0 ms-2 ml-2 font-weight-bold">${msg.author}</p>
+                  </div>
+                  <p class="small mb-0 ms-2">${msg.date}</p>
+                </div>
+
+                <p class="text-left">${msg.text}</p>
+    
+                <div class="d-flex justify-content-end">
+                  <div class="d-flex flex-row align-items-center">
+                    <p class="small text-muted mb-0 mr-2">${msg.likesCount}</p>
+                    <form action="/like-message/<%= book.id %>/${msg._id}" method="POST">
+                      <button style="padding: 0; border: none; background: none; outline: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" stroke="currentColor" fill="${msg.isUserLiked ? 'currentColor' : 'white'}" class="bi bi-heart-fill" viewBox="-1 0 18 16">
+                          <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                        </svg>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+  }
+  const getMsgListFromBack = () => {
+    return `
+      <% book.messages.reverse().map((msg, idx) => { %>
+        ${getMsgTemplate({
+          _id: '<%= msg._id %>',
+          date: '<%= msg.date %>',
+          text: '<%= msg.text %>',
+          authorAvatar: '<%= msg.authorAvatar %>',
+          author: '<%= msg.author %>',
+          likesCount: '<%= msg.likesCount %>',
+          isUserLiked: Boolean(<%= !!user.likedMessages.find((id) => msg._id === id) %>),
+        })}
+      <% }); %>
+    `;
+  }
+  const bookID = location.pathname.split('view/').pop();
+  const socket = io.connect('/', { query: `bookID=${bookID}` });
+  const msgTextNode = document.querySelector('#msg-text');
+  const sendBtnNode = document.querySelector('#send-btn');
+  const msgListNode = document.querySelector('#msg-list');
+  const noCommentsNode = document.querySelector('#no-comments');
+  
+  msgListNode.insertAdjacentHTML('afterbegin', getMsgListFromBack());
+  
+  sendBtnNode.addEventListener('click', () => {
+    if (msgTextNode.value) {
+      socket.emit('message-to-book', {
+        text: msgTextNode.value,
+        authorAvatar: '<%= user.avatar %>',
+        author: '<%= user.username %>',
+        likesCount: 0,
+      });
+      msgTextNode.style.border = '1px solid black';
+      msgTextNode.value = '';
+    } else {
+      msgTextNode.style.border = '1px solid red';
+    }
+  });
+
+  socket.on('message-to-book', (msg) => {
+    if (noCommentsNode) {
+      noCommentsNode.style.display = 'none';
+    }
+    const newMsgNode = getMsgTemplate(msg);
+    msgListNode.insertAdjacentHTML('afterbegin', newMsgNode);
+  });
+</script>
 
 <%- include("../layouts/end") %>

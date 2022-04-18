@@ -1,4 +1,5 @@
 const multer = require('multer');
+const { generateUniqueId } = require('node-unique-id-generator');
 const { COVERS_TYPES, BOOKS_TYPES, FIELDNAMES } = require('../constants/files');
 
 const storage = multer.diskStorage({
@@ -14,7 +15,7 @@ const storage = multer.diskStorage({
   filename(req, file, cb) {
     const extArray = file.mimetype.split('/');
     const ext = extArray[extArray.length - 1];
-    cb(null, `${req.params.id}.${ext}`);
+    cb(null, `${req.params.id ? req.params.id : generateUniqueId()}.${ext}`);
   },
 });
 

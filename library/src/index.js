@@ -7,7 +7,11 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const http = require('http');
+const socketIO = require('socket.io');
+const { generateUniqueId } = require('node-unique-id-generator');
 const UserModel = require('./models/auth-model');
+const BooksList = require('./models/books-adapter');
 
 /* MIDDLEWARES */
 const errorMiddleware = require('./middleware/error');
@@ -76,7 +80,9 @@ const usersRouter = require('./routes/users');
 app.use('/public', express.static(`${__dirname}/../public`));
 app.use('/', authRouter);
 
-app.get('/', (req, res, next) => {
+app.use('/', (req, res, next) => {
+  if (req.headers.host === 'library:4000') return next();
+
   console.log('FROM REDIRECT: ', req.user, req.username, req.isAuthenticated());
   if (!req.isAuthenticated()) {
     if (req.session) {
@@ -92,6 +98,46 @@ app.use('/api/books', booksApiRouter);
 
 app.use(errorMiddleware);
 
+const server = http.Server(app);
+const io = socketIO(server);
+
+io.on('connection', (socket) => {
+  const { id } = socket;
+  const { bookID } = socket.handshake.query;
+  console.log(`Socket connected: ${id}`);
+  console.log(`Socket bookID: ${bookID}`);
+
+  socket.join(bookID);
+
+  socket.on('message-to-book', async (msg) => {
+    console.log('Message:', msg);
+    const newDateNow = new Date(Date.now() - (new Date().getTimezoneOffset() * 60 * 1000)).toISOString().slice(0, -5).split('T');
+    const newMsg = {
+      text: msg.text,
+      authorAvatar: msg.authorAvatar,
+      author: msg.author,
+      likesCount: msg.likesCount,
+      date: `${newDateNow[0]} ${newDateNow[1]}`,
+      _id: generateUniqueId(),
+    };
+    const bookItem = await BooksList.getBookByID(bookID);
+    const newBook = await BooksList.editBook(bookID, {
+      messages: [
+        ...bookItem.messages,
+        newMsg,
+      ],
+    });
+    if (newBook) {
+      socket.to(bookID).emit('message-to-book', newMsg);
+      socket.emit('message-to-book', newMsg);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`Socket disconnected: ${id}`);
+  });
+});
+
 /* ENVIROMENT VARIABLES */
 const SERVER_PORT = process.env.LIBRARY_PORT || 4000;
 const MONGO_URL = process.env.MONGO_URL || 'mongo';
@@ -101,7 +147,7 @@ const DB_NAME = process.env.DB_NAME || 'BOOKS';
 async function start() {
   try {
     await mongoose.connect(`${MONGO_URL}:${MONGO_PORT}/${DB_NAME}`);
-    app.listen(SERVER_PORT, () => {
+    server.listen(SERVER_PORT, () => {
       console.log(`Server is running on port ${SERVER_PORT}`);
     });
   } catch (e) {

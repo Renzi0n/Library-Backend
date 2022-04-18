@@ -14,6 +14,14 @@ const UserSchema = new Schema({
     type: String,
     default: '',
   },
+  likedMessages: {
+    type: [String],
+    default: [],
+  },
+  favoriteBooks: {
+    type: [String],
+    default: [],
+  },
 });
 
 module.exports = model('user', UserSchema);
