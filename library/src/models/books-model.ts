@@ -59,4 +59,22 @@ const bookSchema = new Schema({
   },
 });
 
+interface Message {
+  text: string;
+  likesCount: string;
+  author: string;
+  authorAvatar: string;
+  date: string;
+}
+
+export interface Book {
+  title: string;
+  description: string;
+  cover: string;
+  book: string;
+  favoriteCount: number;
+  authors: string;
+  messages: Message[];
+}
+
 module.exports = model('Book', bookSchema);

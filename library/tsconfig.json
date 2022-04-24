@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "target": "es5",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "baseUrl": ".",
+    "checkJs": false,
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
